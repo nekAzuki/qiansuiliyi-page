@@ -29,13 +29,9 @@ jobs:
         run: npx @cloudflare/next-on-pages
 
       - name: Apply D1 migrations
-        run: |
-          SQL_CONTENT=$(cat migrations/0001_init.sql)
-          curl -s -f -X POST \
-            "https://api.cloudflare.com/client/v4/accounts/${{ secrets.CLOUDFLARE_ACCOUNT_ID }}/d1/database/${{ secrets.D1_DATABASE_ID }}/query" \
-            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            -d "$(jq -n --arg sql "$SQL_CONTENT" '{sql: $sql}')"
+        run: bash scripts/migrate.sh
+        env:
+          D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
 
       - name: Deploy to Cloudflare Pages
         run: npx wrangler deploy
