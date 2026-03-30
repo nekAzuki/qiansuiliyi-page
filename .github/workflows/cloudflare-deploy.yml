@@ -30,11 +30,11 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: d1 migrations apply songlist-db --remote
+          command: d1 execute songlist-db --remote --file=migrations/0001_init.sql
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy .vercel/output/static --project-name=qiansuiliyi-page --d1=DB=92a26740-2aca-42f1-bb23-14fb50e5d987
+          command: pages deploy .vercel/output/static --project-name=qiansuiliyi-page

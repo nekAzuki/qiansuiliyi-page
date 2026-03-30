@@ -1,9 +1,9 @@
 name = "qiansuiliyi-page"
 compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = ".vercel/output/static"
 
 [[d1_databases]]
 binding = "DB"
 database_name = "songlist-db"
 database_id = "92a26740-2aca-42f1-bb23-14fb50e5d987"
-migrations_dir = "migrations"
