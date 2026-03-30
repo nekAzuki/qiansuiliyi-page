@@ -34,4 +34,4 @@ jobs:
           D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
 
       - name: Deploy to Cloudflare Pages
-        run: npx wrangler pages deploy .vercel/output/static --project-name=qiansuiliyi-page --compatibility-date=2024-09-23 --compatibility-flags=nodejs_compat
+        run: npx wrangler pages deploy .vercel/output/static --project-name=qiansuiliyi-page
