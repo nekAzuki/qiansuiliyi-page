@@ -1,16 +1,21 @@
 export const runtime = 'edge';
 
 import { NextResponse } from 'next/server';
-import { getEnv } from '@/lib/db';
+import { getRequestContext } from '@cloudflare/next-on-pages';
 
 export async function GET() {
-  const env = getEnv();
-  return NextResponse.json({
-    hasUsername: !!env.ADMIN_USERNAME,
-    usernameLength: env.ADMIN_USERNAME?.length ?? 0,
-    hasPasswordHash: !!env.ADMIN_PASSWORD_HASH,
-    passwordHashLength: env.ADMIN_PASSWORD_HASH?.length ?? 0,
-    hasJwtSecret: !!env.JWT_SECRET,
-    hasDB: !!env.DB,
-  });
+  const { env } = getRequestContext();
+  const keys = Object.keys(env as Record<string, unknown>);
+  const info: Record<string, string> = {};
+  for (const key of keys) {
+    const val = (env as Record<string, unknown>)[key];
+    if (typeof val === 'string') {
+      info[key] = `string(${val.length})`;
+    } else if (typeof val === 'object' && val !== null) {
+      info[key] = `object(${val.constructor?.name ?? 'unknown'})`;
+    } else {
+      info[key] = typeof val;
+    }
+  }
+  return NextResponse.json({ envKeys: keys, envInfo: info });
 }
