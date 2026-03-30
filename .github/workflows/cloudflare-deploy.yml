@@ -38,4 +38,4 @@ jobs:
             -d "$(jq -n --arg sql "$SQL_CONTENT" '{sql: $sql}')"
 
       - name: Deploy to Cloudflare Pages
-        run: npx wrangler pages deploy .vercel/output/static --project-name=qiansuiliyi-page
+        run: npx wrangler deploy
