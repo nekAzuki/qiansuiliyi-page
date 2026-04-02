@@ -85,15 +85,20 @@ export default function SongCard({ song, onCopy }: SongCardProps) {
 
         <div className="flex flex-wrap items-center gap-1.5 mt-2">
           {song.language && (
-            <span className="inline-block px-2 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-700">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-primary-500/15 text-primary-700 border border-primary-300/40">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="flex-shrink-0">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+              </svg>
               {song.language}
             </span>
           )}
           {tags.map((tag) => (
             <span
               key={tag}
-              className="inline-block px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600"
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-amber-500/10 text-amber-700 border border-amber-300/40"
             >
+              <span className="text-[10px]">#</span>
               {tag}
             </span>
           ))}
