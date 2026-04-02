@@ -1,5 +1,3 @@
-import Button from '@/components/ui/Button';
-
 interface TableToolbarProps {
   unsavedCount: number;
   selectedCount: number;
@@ -29,48 +27,68 @@ export default function TableToolbar({
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <Button variant="secondary" size="sm" onClick={onSelectAll}>
+      {/* Selection actions — gray/neutral */}
+      <button
+        onClick={onSelectAll}
+        className="px-3 py-1.5 text-sm rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-100 active:bg-gray-200 transition-colors"
+      >
         {allSelected ? '取消全选' : '全选'}
-      </Button>
+      </button>
 
-      <Button variant="secondary" size="sm" onClick={onAdd}>
-        添加歌曲
-      </Button>
-
-      <Button
-        variant="secondary"
-        size="sm"
+      <button
         onClick={onDeleteSelected}
         disabled={selectedCount === 0}
+        className="px-3 py-1.5 text-sm rounded-lg border border-red-300 text-red-600 hover:bg-red-50 active:bg-red-100 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
       >
         删除选中{selectedCount > 0 && `(${selectedCount})`}
-      </Button>
+      </button>
 
-      <Button
-        size="sm"
+      {/* Divider */}
+      <div className="w-px h-6 bg-gray-200 mx-1" />
+
+      {/* Primary action — add */}
+      <button
+        onClick={onAdd}
+        className="px-3 py-1.5 text-sm rounded-lg bg-primary-500 text-white hover:bg-primary-600 active:bg-primary-700 shadow-sm transition-colors"
+      >
+        添加歌曲
+      </button>
+
+      {/* Save — prominent green, only when there are changes */}
+      <button
         onClick={onSave}
         disabled={unsavedCount === 0}
-        className="!bg-emerald-600 hover:!bg-emerald-700 active:!bg-emerald-800 text-white shadow-md !border-0"
+        className="px-4 py-1.5 text-sm font-medium rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 active:bg-emerald-800 shadow-sm transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
       >
         保存修改
         {unsavedCount > 0 && (
-          <span className="ml-1 inline-flex items-center justify-center w-5 h-5 rounded-full bg-white/20 text-xs">
+          <span className="ml-1.5 inline-flex items-center justify-center min-w-[20px] h-5 px-1 rounded-full bg-white/25 text-xs">
             {unsavedCount}
           </span>
         )}
-      </Button>
+      </button>
 
       <div className="flex-1" />
 
-      <Button variant="ghost" size="sm" onClick={onImport}>
+      {/* Utility actions — subtle */}
+      <button
+        onClick={onImport}
+        className="px-3 py-1.5 text-sm rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+      >
         导入
-      </Button>
-      <Button variant="ghost" size="sm" onClick={onExport}>
+      </button>
+      <button
+        onClick={onExport}
+        className="px-3 py-1.5 text-sm rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+      >
         导出
-      </Button>
-      <Button variant="ghost" size="sm" onClick={onShowVersions}>
+      </button>
+      <button
+        onClick={onShowVersions}
+        className="px-3 py-1.5 text-sm rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+      >
         版本历史
-      </Button>
+      </button>
     </div>
   );
 }
