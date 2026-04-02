@@ -110,19 +110,6 @@ export default function BackgroundSwitcher({ children }: { children: React.React
         {children}
       </div>
 
-      <style jsx>{`
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        @keyframes characterJump {
-          0% { transform: translateY(0); }
-          30% { transform: translateY(-20px); }
-          50% { transform: translateY(0); }
-          70% { transform: translateY(-8px); }
-          100% { transform: translateY(0); }
-        }
-      `}</style>
     </div>
   );
 }
