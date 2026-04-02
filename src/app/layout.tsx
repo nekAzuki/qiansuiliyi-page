@@ -1,15 +1,8 @@
 import type { Metadata } from 'next';
-import { Noto_Sans_SC } from 'next/font/google';
+import BackgroundSwitcher from '@/components/ui/BackgroundSwitcher';
 import './globals.css';
 
 export const runtime = 'edge';
-
-const notoSansSC = Noto_Sans_SC({
-  subsets: ['latin'],
-  weight: ['400', '500', '700'],
-  display: 'swap',
-  variable: '--font-noto-sans-sc',
-});
 
 export const metadata: Metadata = {
   title: '千穗梨衣的歌单',
@@ -22,9 +15,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="zh-CN" className={notoSansSC.variable}>
-      <body className={`${notoSansSC.className} antialiased`}>
-        {children}
+    <html lang="zh-CN">
+      <head>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body className="antialiased" style={{ fontFamily: '"Noto Sans SC", sans-serif' }}>
+        <BackgroundSwitcher>
+          {children}
+        </BackgroundSwitcher>
       </body>
     </html>
   );

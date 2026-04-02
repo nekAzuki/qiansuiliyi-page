@@ -62,3 +62,61 @@ export async function POST(
     );
   }
 }
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id: idStr } = await params;
+    const songId = parseInt(idStr, 10);
+
+    if (isNaN(songId)) {
+      return NextResponse.json<ApiResponse>(
+        { success: false, error: '无效的歌曲 ID' },
+        { status: 400 }
+      );
+    }
+
+    const ip =
+      request.headers.get('cf-connecting-ip') ||
+      request.headers.get('x-forwarded-for') ||
+      '0.0.0.0';
+    const ipHash = await hashIP(ip);
+
+    const db = getDB();
+
+    // Remove one like record for this IP
+    const existing = await db
+      .prepare('SELECT id FROM likes_log WHERE song_id = ? AND ip_hash = ? LIMIT 1')
+      .bind(songId, ipHash)
+      .first<{ id: number }>();
+
+    if (existing) {
+      await db
+        .prepare('DELETE FROM likes_log WHERE id = ?')
+        .bind(existing.id)
+        .run();
+
+      await db
+        .prepare('UPDATE songs SET likes = MAX(0, likes - 1) WHERE id = ?')
+        .bind(songId)
+        .run();
+    }
+
+    const song = await db
+      .prepare('SELECT likes FROM songs WHERE id = ?')
+      .bind(songId)
+      .first<{ likes: number }>();
+
+    return NextResponse.json<ApiResponse<{ likes: number }>>({
+      success: true,
+      data: { likes: song?.likes ?? 0 },
+    });
+  } catch {
+    return NextResponse.json<ApiResponse>(
+      { success: false, error: '服务器内部错误' },
+      { status: 500 }
+    );
+  }
+}

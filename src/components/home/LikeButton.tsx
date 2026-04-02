@@ -21,13 +21,12 @@ export default function LikeButton({ songId, initialCount, onLiked }: LikeButton
   return (
     <button
       onClick={handleClick}
-      disabled={liked}
       className={`
         inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs
-        transition-colors duration-150 select-none
+        transition-colors duration-150 select-none cursor-pointer
         ${
           liked
-            ? 'text-pink-500 bg-pink-50 cursor-default'
+            ? 'text-pink-500 bg-pink-50 hover:bg-pink-100'
             : 'text-gray-400 hover:text-pink-500 hover:bg-pink-50'
         }
       `}

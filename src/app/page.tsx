@@ -16,6 +16,7 @@ export default function HomePage() {
   const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [toastVisible, setToastVisible] = useState(false);
+  const [copiedName, setCopiedName] = useState('');
 
   const tags = useTags();
   const { songs, loading, hasMore, fetchMore } = useSongs({
@@ -33,7 +34,16 @@ export default function HomePage() {
     return () => clearTimeout(debounceRef.current);
   }, [searchInput]);
 
-  const handleCopy = useCallback(() => {
+  const handleRandom = useCallback(() => {
+    if (songs.length === 0) return;
+    const randomSong = songs[Math.floor(Math.random() * songs.length)];
+    navigator.clipboard.writeText(randomSong.song_name).catch(() => {});
+    setCopiedName(randomSong.song_name);
+    setToastVisible(true);
+  }, [songs]);
+
+  const handleCopy = useCallback((songName: string) => {
+    setCopiedName(songName);
     setToastVisible(true);
   }, []);
 
@@ -44,7 +54,7 @@ export default function HomePage() {
   return (
     <main className="max-w-lg mx-auto px-4 py-6 space-y-4">
       <ProfileHeader songCount={songs.length} />
-      <SearchBar value={searchInput} onChange={setSearchInput} />
+      <SearchBar value={searchInput} onChange={setSearchInput} onRandom={handleRandom} />
       <FilterBar
         languages={[...LANGUAGES]}
         selectedLanguage={selectedLanguage}
@@ -60,7 +70,7 @@ export default function HomePage() {
         onLoadMore={fetchMore}
         onCopy={handleCopy}
       />
-      <Toast message="已复制歌曲名" visible={toastVisible} onHide={hideToast} />
+      <Toast message="已复制歌曲名：" highlight={copiedName} visible={toastVisible} onHide={hideToast} />
     </main>
   );
 }

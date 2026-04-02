@@ -40,8 +40,13 @@ export async function GET(request: NextRequest) {
 
     // Language filter
     if (language) {
-      conditions.push('language = ?');
-      bindings.push(language);
+      if (language === '外语') {
+        conditions.push("language != ? AND language != ''");
+        bindings.push('国语');
+      } else {
+        conditions.push('language = ?');
+        bindings.push(language);
+      }
     }
 
     // Tags filter

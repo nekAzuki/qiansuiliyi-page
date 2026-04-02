@@ -52,7 +52,7 @@ export default function SongList({ songs, loading, hasMore, onLoadMore, onCopy }
     return () => observer.disconnect();
   }, [hasMore, loading, onLoadMore]);
 
-  if (!loading && songs.length === 0) {
+  if (songs.length === 0 && !loading) {
     return (
       <div className="text-center py-12 text-gray-400">
         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" className="mx-auto mb-3 text-gray-300">
@@ -70,7 +70,7 @@ export default function SongList({ songs, loading, hasMore, onLoadMore, onCopy }
         <SongCard key={song.id} song={song} onCopy={onCopy} />
       ))}
 
-      {loading && (
+      {loading && songs.length === 0 && (
         <>
           <SkeletonCard />
           <SkeletonCard />
