@@ -75,7 +75,7 @@ export default function SongRow({
         setCurrentKeyword(value.trim());
         try {
           const res = await fetch(`/api/songs/search?keyword=${encodeURIComponent(value.trim())}`);
-          const json = await res.json();
+          const json = await res.json() as { success: boolean; data?: SearchResult[] };
           if (json.success && json.data) {
             setSuggestions(json.data);
             setShowSuggestions(json.data.length > 0);
@@ -102,9 +102,9 @@ export default function SongRow({
       const res = await fetch(
         `/api/songs/search?keyword=${encodeURIComponent(currentKeyword)}&offset=${suggestions.length}`
       );
-      const json = await res.json();
+      const json = await res.json() as { success: boolean; data?: SearchResult[] };
       if (json.success && json.data) {
-        setSuggestions((prev) => [...prev, ...json.data]);
+        setSuggestions((prev) => [...prev, ...json.data!]);
         setHasMore(json.data.length >= 10);
       }
     } catch {
