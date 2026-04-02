@@ -30,21 +30,22 @@ export default function TableToolbar({
       {/* Selection actions — gray/neutral */}
       <button
         onClick={onSelectAll}
-        className="px-3 py-1.5 text-sm rounded-lg border border-primary-400 text-primary-700 bg-primary-50 hover:bg-primary-100 active:bg-primary-200 transition-colors font-medium min-w-[5em] text-center"
+        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg border border-primary-400 text-primary-700 bg-primary-50 hover:bg-primary-100 active:bg-primary-200 transition-colors font-medium whitespace-nowrap"
       >
-        {allSelected ? '取消全选' : '全选'}
+        <input type="checkbox" checked={allSelected} readOnly className="rounded border-primary-400 text-primary-500 pointer-events-none" />
+        全选
       </button>
 
       <button
         onClick={onDeleteSelected}
         disabled={selectedCount === 0}
-        className="px-3 py-1.5 text-sm rounded-lg border border-red-300 text-red-600 hover:bg-red-50 active:bg-red-100 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+        className="px-3 py-1.5 text-sm rounded-lg border border-red-300 text-red-600 hover:bg-red-50 active:bg-red-100 transition-colors disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
       >
-        删除选中{selectedCount > 0 && `(${selectedCount})`}
+        删除选中{selectedCount > 0 && <span className="ml-1">({selectedCount})</span>}
       </button>
 
-      {/* Divider */}
-      <div className="w-px h-6 bg-gray-200 mx-1" />
+      {/* Spacer between selection and editing groups */}
+      <div className="w-16" />
 
       {/* Primary action — add */}
       <button

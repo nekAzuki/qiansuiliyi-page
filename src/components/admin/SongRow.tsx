@@ -146,15 +146,18 @@ export default function SongRow({
   return (
     <>
       <tr className={`${rowBg} border-b border-gray-100 hover:bg-gray-50/50 transition-colors`}>
-        <td className="px-3 py-2 w-10">
+        <td
+          className="px-3 py-2 w-10 cursor-pointer select-none"
+          onClick={(e) => {
+            e.preventDefault();
+            onSelect(!isSelected, e.shiftKey);
+          }}
+        >
           <input
             type="checkbox"
             checked={isSelected}
-            onChange={(e) => {
-              const nativeEvent = e.nativeEvent as MouseEvent;
-              onSelect(e.target.checked, nativeEvent.shiftKey);
-            }}
-            className="rounded border-gray-300 text-primary-500 focus:ring-primary-200"
+            readOnly
+            className="rounded border-gray-300 text-primary-500 focus:ring-primary-200 pointer-events-none"
           />
         </td>
         <td className="px-3 py-2 relative" ref={suggestionsRef}>

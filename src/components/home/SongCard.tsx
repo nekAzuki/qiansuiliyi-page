@@ -85,14 +85,14 @@ export default function SongCard({ song, onCopy }: SongCardProps) {
 
         <div className="flex flex-wrap items-center gap-1.5 mt-2">
           {song.language && (
-            <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-medium bg-primary-100 text-primary-700">
+            <span className="inline-block px-2 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-700">
               {song.language}
             </span>
           )}
           {tags.map((tag) => (
             <span
               key={tag}
-              className="inline-block px-2 py-0.5 rounded-full text-[10px] font-medium bg-gray-100 text-gray-600"
+              className="inline-block px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600"
             >
               {tag}
             </span>
@@ -106,7 +106,7 @@ export default function SongCard({ song, onCopy }: SongCardProps) {
           >
             <LikeButton songId={song.id} initialCount={song.likes} />
           </div>
-          <span className="text-[10px] text-gray-400">{addedDate}</span>
+          <span className="text-xs text-gray-400">{addedDate}</span>
         </div>
       </div>
     </div>

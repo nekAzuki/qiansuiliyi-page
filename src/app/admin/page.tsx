@@ -27,6 +27,8 @@ export default function AdminPage() {
 
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const lastClickedRef = useRef<number | null>(null);
+  const songsRef = useRef(songs);
+  songsRef.current = songs;
   const [importOpen, setImportOpen] = useState(false);
   const [importData, setImportData] = useState<SongInput[]>([]);
   const [versionsOpen, setVersionsOpen] = useState(false);
@@ -40,29 +42,33 @@ export default function AdminPage() {
   }, []);
 
   const handleSelect = useCallback((id: number, selected: boolean, shiftKey?: boolean) => {
+    const currentSongs = songsRef.current;
+    const lastClicked = lastClickedRef.current;
+    lastClickedRef.current = id;
+
+    if (shiftKey && lastClicked !== null) {
+      const lastIdx = currentSongs.findIndex((s) => s.id === lastClicked);
+      const curIdx = currentSongs.findIndex((s) => s.id === id);
+      if (lastIdx !== -1 && curIdx !== -1) {
+        const start = Math.min(lastIdx, curIdx);
+        const end = Math.max(lastIdx, curIdx);
+        const rangeIds = currentSongs.slice(start, end + 1).map((s) => s.id);
+        setSelectedIds((prev) => {
+          const next = new Set(prev);
+          rangeIds.forEach((rid) => next.add(rid));
+          return next;
+        });
+        return;
+      }
+    }
+
     setSelectedIds((prev) => {
       const next = new Set(prev);
-
-      if (shiftKey && lastClickedRef.current !== null) {
-        // Shift-click: select range
-        const lastIdx = songs.findIndex((s) => s.id === lastClickedRef.current);
-        const curIdx = songs.findIndex((s) => s.id === id);
-        if (lastIdx !== -1 && curIdx !== -1) {
-          const start = Math.min(lastIdx, curIdx);
-          const end = Math.max(lastIdx, curIdx);
-          for (let i = start; i <= end; i++) {
-            next.add(songs[i].id);
-          }
-        }
-      } else {
-        if (selected) next.add(id);
-        else next.delete(id);
-      }
-
+      if (selected) next.add(id);
+      else next.delete(id);
       return next;
     });
-    lastClickedRef.current = id;
-  }, [songs]);
+  }, []);
 
   const handleSelectAll = useCallback(() => {
     if (selectedIds.size === songs.length) {
