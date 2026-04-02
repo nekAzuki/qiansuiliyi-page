@@ -10,7 +10,7 @@ interface SongTableProps {
   pendingChanges: Map<number, ChangeType>;
   onUpdate: (id: number, field: string, value: string) => void;
   onDelete: (id: number) => void;
-  onSelect: (id: number, selected: boolean) => void;
+  onSelect: (id: number, selected: boolean, shiftKey?: boolean) => void;
   selectedIds: Set<number>;
   detectDuplicates: (
     name: string,
@@ -82,7 +82,7 @@ export default function SongTable({
                 isSelected={selectedIds.has(song.id)}
                 duplicateOf={dup}
                 onUpdate={(field, value) => onUpdate(song.id, field, value)}
-                onSelect={(selected) => onSelect(song.id, selected)}
+                onSelect={(selected, shiftKey) => onSelect(song.id, selected, shiftKey)}
               />
             );
           })}

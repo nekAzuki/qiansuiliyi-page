@@ -26,6 +26,7 @@ export default function AdminPage() {
   } = useAdminSongs();
 
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+  const lastClickedRef = useRef<number | null>(null);
   const [importOpen, setImportOpen] = useState(false);
   const [importData, setImportData] = useState<SongInput[]>([]);
   const [versionsOpen, setVersionsOpen] = useState(false);
@@ -38,14 +39,38 @@ export default function AdminPage() {
     setToastVisible(true);
   }, []);
 
-  const handleSelect = useCallback((id: number, selected: boolean) => {
+  const handleSelect = useCallback((id: number, selected: boolean, shiftKey?: boolean) => {
     setSelectedIds((prev) => {
       const next = new Set(prev);
-      if (selected) next.add(id);
-      else next.delete(id);
+
+      if (shiftKey && lastClickedRef.current !== null) {
+        // Shift-click: select range
+        const lastIdx = songs.findIndex((s) => s.id === lastClickedRef.current);
+        const curIdx = songs.findIndex((s) => s.id === id);
+        if (lastIdx !== -1 && curIdx !== -1) {
+          const start = Math.min(lastIdx, curIdx);
+          const end = Math.max(lastIdx, curIdx);
+          for (let i = start; i <= end; i++) {
+            next.add(songs[i].id);
+          }
+        }
+      } else {
+        if (selected) next.add(id);
+        else next.delete(id);
+      }
+
       return next;
     });
-  }, []);
+    lastClickedRef.current = id;
+  }, [songs]);
+
+  const handleSelectAll = useCallback(() => {
+    if (selectedIds.size === songs.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(songs.map((s) => s.id)));
+    }
+  }, [songs, selectedIds.size]);
 
   const handleDeleteSelected = useCallback(() => {
     if (selectedIds.size === 0) return;
@@ -167,12 +192,14 @@ export default function AdminPage() {
       <TableToolbar
         unsavedCount={unsavedCount}
         selectedCount={selectedIds.size}
+        totalCount={songs.length}
         onAdd={addSong}
         onDeleteSelected={handleDeleteSelected}
         onSave={handleSave}
         onImport={handleImportFile}
         onExport={handleExport}
         onShowVersions={() => setVersionsOpen(true)}
+        onSelectAll={handleSelectAll}
       />
 
       <input

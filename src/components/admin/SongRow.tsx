@@ -20,7 +20,7 @@ interface SongRowProps {
   isSelected: boolean;
   duplicateOf: { song_name: string; artist: string } | null;
   onUpdate: (field: string, value: string) => void;
-  onSelect: (selected: boolean) => void;
+  onSelect: (selected: boolean, shiftKey?: boolean) => void;
 }
 
 export default function SongRow({
@@ -150,7 +150,10 @@ export default function SongRow({
           <input
             type="checkbox"
             checked={isSelected}
-            onChange={(e) => onSelect(e.target.checked)}
+            onChange={(e) => {
+              const nativeEvent = e.nativeEvent as MouseEvent;
+              onSelect(e.target.checked, nativeEvent.shiftKey);
+            }}
             className="rounded border-gray-300 text-primary-500 focus:ring-primary-200"
           />
         </td>
