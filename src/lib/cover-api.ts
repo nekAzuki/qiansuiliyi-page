@@ -1,5 +1,5 @@
-const ARTWORK_API = 'https://firefly-api.eikasia30.workers.dev/api/v1/artwork';
 const NETEASE_SEARCH_API = 'https://music.163.com/api/search/get';
+const NETEASE_DETAIL_API = 'https://music.163.com/api/song/detail';
 const TIMEOUT_MS = 5000;
 
 export interface SongSearchResult {
@@ -13,30 +13,12 @@ export async function fetchCoverUrl(
   artist: string
 ): Promise<string> {
   try {
-    const url = `${ARTWORK_API}?title=${encodeURIComponent(songName)}&artist=${encodeURIComponent(artist)}&size=large`;
-
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
-
-    const response = await fetch(url, { signal: controller.signal });
-    clearTimeout(timeoutId);
-
-    if (!response.ok) return '';
-
-    // The artwork API may return an image directly or a JSON with URL
-    const contentType = response.headers.get('content-type') || '';
-    if (contentType.includes('image')) {
-      // It returns the image directly — use the request URL as the cover URL
-      return url;
+    // Search Netease for the song and get album cover directly
+    const results = await searchSongs(`${songName} ${artist}`, 0, 1);
+    if (results.length > 0 && results[0].coverUrl) {
+      return results[0].coverUrl;
     }
-
-    // Try parsing as JSON
-    try {
-      const data = await response.json() as Record<string, unknown>;
-      return (data?.url as string) || (data?.picUrl as string) || url;
-    } catch {
-      return url;
-    }
+    return '';
   } catch {
     return '';
   }
@@ -47,7 +29,6 @@ export async function searchSongs(keyword: string, offset: number = 0, limit: nu
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
-    // Use Netease search API
     const params = new URLSearchParams({
       s: keyword,
       type: '1',
@@ -72,19 +53,73 @@ export async function searchSongs(keyword: string, offset: number = 0, limit: nu
 
     if (!songs || songs.length === 0) return [];
 
+    // Get song IDs for detail lookup (search results may not include full album art)
+    const songIds = songs.map((s) => s.id as number).filter(Boolean);
+
+    // Try to get higher quality covers from detail API
+    let coverMap: Record<number, string> = {};
+    try {
+      coverMap = await fetchCoversByIds(songIds);
+    } catch {
+      // Fall back to search result covers
+    }
+
     return songs.map((song) => {
+      const songId = song.id as number;
       const artists = song.artists as Array<Record<string, unknown>> | undefined;
       const artistName = artists?.map((a) => a.name as string).join(', ') || '';
       const album = song.album as Record<string, unknown> | undefined;
-      const picUrl = (album?.picUrl as string) || '';
+      const searchPicUrl = (album?.picUrl as string) || '';
 
       return {
         name: (song.name as string) || '',
         artist: artistName,
-        coverUrl: picUrl,
+        coverUrl: coverMap[songId] || searchPicUrl,
       };
     });
   } catch {
     return [];
+  }
+}
+
+async function fetchCoversByIds(ids: number[]): Promise<Record<number, string>> {
+  if (ids.length === 0) return {};
+
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
+
+    const idsParam = ids.join(',');
+    const response = await fetch(
+      `${NETEASE_DETAIL_API}?ids=[${idsParam}]`,
+      {
+        signal: controller.signal,
+        headers: {
+          'Referer': 'https://music.163.com/',
+          'User-Agent': 'Mozilla/5.0',
+        },
+      }
+    );
+    clearTimeout(timeoutId);
+
+    if (!response.ok) return {};
+
+    const data = await response.json() as Record<string, unknown>;
+    const songs = data?.songs as Array<Record<string, unknown>> | undefined;
+
+    if (!songs) return {};
+
+    const map: Record<number, string> = {};
+    for (const song of songs) {
+      const id = song.id as number;
+      const album = song.album as Record<string, unknown> | undefined;
+      const picUrl = (album?.picUrl as string) || '';
+      if (id && picUrl) {
+        map[id] = picUrl;
+      }
+    }
+    return map;
+  } catch {
+    return {};
   }
 }
