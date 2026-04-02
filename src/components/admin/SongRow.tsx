@@ -40,7 +40,7 @@ export default function SongRow({
   const [hasMore, setHasMore] = useState(false);
   const [currentKeyword, setCurrentKeyword] = useState('');
   const searchTimeout = useRef<ReturnType<typeof setTimeout>>();
-  const suggestionsRef = useRef<HTMLDivElement>(null);
+  const suggestionsRef = useRef<HTMLTableCellElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const rowBg = isDeleted
