@@ -10,10 +10,12 @@ export default function ProfileHeader({ songCount }: ProfileHeaderProps) {
       <div className="absolute -bottom-6 -left-6 w-24 h-24 rounded-full bg-white/10" />
 
       <div className="relative flex items-center gap-4 p-6">
-        {/* Avatar placeholder */}
-        <div className="flex-shrink-0 w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-xl font-bold">
-          千穗
-        </div>
+        {/* Avatar */}
+        <img
+          src="/avatar.jpg"
+          alt="千穗梨衣_lily"
+          className="flex-shrink-0 w-16 h-16 rounded-full object-cover border-2 border-white/30"
+        />
 
         <div className="min-w-0">
           <h1 className="text-xl font-bold truncate">千穗梨衣_lily</h1>
