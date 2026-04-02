@@ -3,6 +3,7 @@
 import { Song } from '@/types';
 import { LANGUAGES } from '@/lib/constants';
 import DuplicateWarning from './DuplicateWarning';
+import TagInput from './TagInput';
 
 interface SongRowProps {
   song: Song;
@@ -82,13 +83,10 @@ export default function SongRow({
           </select>
         </td>
         <td className="px-3 py-2">
-          <input
-            type="text"
+          <TagInput
             value={song.tags}
-            onChange={(e) => onUpdate('tags', e.target.value)}
+            onChange={(val) => onUpdate('tags', val)}
             disabled={isDeleted}
-            className={`w-full bg-transparent text-sm border-0 p-0 focus:ring-0 ${textStyle}`}
-            placeholder="标签（逗号分隔）"
           />
         </td>
         <td className="px-3 py-2">

@@ -85,8 +85,8 @@ export default function BackgroundSwitcher({ children }: { children: React.React
 
       {/* Character image - bottom right */}
       <div
-        className="fixed bottom-0 right-0 z-5 overflow-hidden cursor-pointer"
-        style={{ height: '22.5vh', width: 'auto' }}
+        className="fixed bottom-0 right-0 z-20 overflow-hidden cursor-pointer"
+        style={{ height: '52.5vh', width: 'auto' }}
         onClick={() => {
           const el = document.getElementById('bg-character');
           if (el) {

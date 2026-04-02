@@ -32,7 +32,15 @@ export default function SongCard({ song, onCopy }: SongCardProps) {
     }
   };
 
-  const tags = song.tags ? song.tags.split(',').map((t) => t.trim()).filter(Boolean) : [];
+  let tags: string[] = [];
+  if (song.tags) {
+    try {
+      const parsed = JSON.parse(song.tags);
+      tags = Array.isArray(parsed) ? parsed.filter(Boolean) : [];
+    } catch {
+      tags = song.tags.split(',').map((t) => t.trim()).filter(Boolean);
+    }
+  }
   const addedDate = new Date(song.created_at).toLocaleDateString('zh-CN');
 
   return (

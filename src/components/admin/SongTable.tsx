@@ -37,25 +37,33 @@ export default function SongTable({
 
   return (
     <div className="card overflow-x-auto">
-      <table className="w-full text-sm">
+      <table className="w-full text-sm" style={{ tableLayout: 'fixed' }}>
+        <colgroup>
+          <col style={{ width: '40px' }} />
+          <col style={{ width: '25%' }} />
+          <col style={{ width: '20%' }} />
+          <col style={{ width: '10%' }} />
+          <col style={{ width: '25%' }} />
+          <col style={{ width: '20%' }} />
+        </colgroup>
         <thead>
           <tr className="border-b border-gray-200 bg-gray-50/50">
-            <th className="px-3 py-2.5 text-left w-10">
+            <th className="px-3 py-2.5 text-left">
               <span className="sr-only">选择</span>
             </th>
-            <th className="px-3 py-2.5 text-left font-medium text-gray-600 min-w-[160px]">
+            <th className="px-3 py-2.5 text-left font-medium text-gray-600">
               歌曲名称
             </th>
-            <th className="px-3 py-2.5 text-left font-medium text-gray-600 min-w-[120px]">
+            <th className="px-3 py-2.5 text-left font-medium text-gray-600">
               歌手
             </th>
-            <th className="px-3 py-2.5 text-left font-medium text-gray-600 min-w-[80px]">
+            <th className="px-3 py-2.5 text-left font-medium text-gray-600">
               语言
             </th>
-            <th className="px-3 py-2.5 text-left font-medium text-gray-600 min-w-[140px]">
+            <th className="px-3 py-2.5 text-left font-medium text-gray-600">
               分类标签
             </th>
-            <th className="px-3 py-2.5 text-left font-medium text-gray-600 min-w-[120px]">
+            <th className="px-3 py-2.5 text-left font-medium text-gray-600">
               备注
             </th>
           </tr>

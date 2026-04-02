@@ -39,7 +39,7 @@ export default function AdminLayout({
   return (
     <div className="min-h-screen flex flex-col">
       {/* Top bar */}
-      <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-sm border-b border-primary-100">
+      <header className="sticky top-0 z-40 bg-white/40 backdrop-blur-sm border-b border-primary-100/50">
         <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
           <h1 className="text-lg font-bold text-primary-700">歌单管理</h1>
           <Button variant="ghost" size="sm" onClick={handleLogout}>
