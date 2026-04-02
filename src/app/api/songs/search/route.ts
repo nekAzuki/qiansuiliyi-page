@@ -15,7 +15,11 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    const results = await searchSongs(keyword);
+    const { searchParams } = new URL(request.url);
+    const offset = parseInt(searchParams.get('offset') || '0', 10);
+    const limit = parseInt(searchParams.get('limit') || '10', 10);
+
+    const results = await searchSongs(keyword, offset, Math.min(limit, 20));
 
     return NextResponse.json<ApiResponse<SongSearchResult[]>>({
       success: true,

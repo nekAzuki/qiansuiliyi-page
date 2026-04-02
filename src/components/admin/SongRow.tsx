@@ -36,8 +36,12 @@ export default function SongRow({
   const [suggestions, setSuggestions] = useState<SearchResult[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [searching, setSearching] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
+  const [currentKeyword, setCurrentKeyword] = useState('');
   const searchTimeout = useRef<ReturnType<typeof setTimeout>>();
   const suggestionsRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const rowBg = isDeleted
     ? 'bg-red-50'
@@ -68,12 +72,14 @@ export default function SongRow({
     if (value.trim().length >= 2) {
       searchTimeout.current = setTimeout(async () => {
         setSearching(true);
+        setCurrentKeyword(value.trim());
         try {
           const res = await fetch(`/api/songs/search?keyword=${encodeURIComponent(value.trim())}`);
           const json = await res.json();
           if (json.success && json.data) {
             setSuggestions(json.data);
             setShowSuggestions(json.data.length > 0);
+            setHasMore(json.data.length >= 10);
           }
         } catch {
           setSuggestions([]);
@@ -84,6 +90,34 @@ export default function SongRow({
     } else {
       setSuggestions([]);
       setShowSuggestions(false);
+      setCurrentKeyword('');
+      setHasMore(false);
+    }
+  };
+
+  const loadMoreResults = async () => {
+    if (loadingMore || !currentKeyword) return;
+    setLoadingMore(true);
+    try {
+      const res = await fetch(
+        `/api/songs/search?keyword=${encodeURIComponent(currentKeyword)}&offset=${suggestions.length}`
+      );
+      const json = await res.json();
+      if (json.success && json.data) {
+        setSuggestions((prev) => [...prev, ...json.data]);
+        setHasMore(json.data.length >= 10);
+      }
+    } catch {
+      // ignore
+    } finally {
+      setLoadingMore(false);
+    }
+  };
+
+  const handleDropdownScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const el = e.currentTarget;
+    if (el.scrollHeight - el.scrollTop - el.clientHeight < 50 && hasMore && !loadingMore) {
+      loadMoreResults();
     }
   };
 
@@ -137,7 +171,11 @@ export default function SongRow({
           </div>
           {/* Search suggestions dropdown */}
           {showSuggestions && suggestions.length > 0 && (
-            <div className="absolute left-0 top-full z-50 w-80 bg-white rounded-lg shadow-lg border border-gray-200 py-1 max-h-60 overflow-y-auto">
+            <div
+              ref={dropdownRef}
+              onScroll={handleDropdownScroll}
+              className="absolute left-0 top-full z-50 w-80 bg-white rounded-lg shadow-lg border border-gray-200 py-1 max-h-60 overflow-y-auto"
+            >
               <div className="px-3 py-1 text-[10px] text-gray-400 border-b border-gray-100">
                 点击选择以自动填充歌手和封面
               </div>
@@ -160,6 +198,9 @@ export default function SongRow({
                   </div>
                 </button>
               ))}
+              {loadingMore && (
+                <div className="px-3 py-2 text-xs text-gray-400 text-center">加载更多...</div>
+              )}
             </div>
           )}
         </td>

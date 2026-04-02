@@ -42,7 +42,7 @@ export async function fetchCoverUrl(
   }
 }
 
-export async function searchSongs(keyword: string): Promise<SongSearchResult[]> {
+export async function searchSongs(keyword: string, offset: number = 0, limit: number = 10): Promise<SongSearchResult[]> {
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
@@ -51,8 +51,8 @@ export async function searchSongs(keyword: string): Promise<SongSearchResult[]> 
     const params = new URLSearchParams({
       s: keyword,
       type: '1',
-      limit: '5',
-      offset: '0',
+      limit: String(limit),
+      offset: String(offset),
     });
 
     const response = await fetch(`${NETEASE_SEARCH_API}?${params.toString()}`, {
