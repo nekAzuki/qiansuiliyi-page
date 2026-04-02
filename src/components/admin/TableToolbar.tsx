@@ -30,7 +30,7 @@ export default function TableToolbar({
       {/* Selection actions — gray/neutral */}
       <button
         onClick={onSelectAll}
-        className="px-3 py-1.5 text-sm rounded-lg border border-primary-400 text-primary-700 bg-primary-50 hover:bg-primary-100 active:bg-primary-200 transition-colors font-medium"
+        className="px-3 py-1.5 text-sm rounded-lg border border-primary-400 text-primary-700 bg-primary-50 hover:bg-primary-100 active:bg-primary-200 transition-colors font-medium min-w-[5em] text-center"
       >
         {allSelected ? '取消全选' : '全选'}
       </button>
