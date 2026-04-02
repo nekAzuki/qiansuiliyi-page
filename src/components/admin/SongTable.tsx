@@ -36,7 +36,7 @@ export default function SongTable({
   }
 
   return (
-    <div className="card overflow-x-auto">
+    <div className="card overflow-visible">
       <table className="w-full text-sm" style={{ tableLayout: 'fixed' }}>
         <colgroup>
           <col style={{ width: '40px' }} />
