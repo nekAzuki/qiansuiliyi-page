@@ -116,6 +116,16 @@ export default function HomePage() {
     step();
   }, [sortedSongs, randomMode]);
 
+  const handleFilterLanguage = useCallback((language: string) => {
+    setSelectedLanguage(language);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
+  const handleFilterTag = useCallback((tag: string) => {
+    setSelectedTags((prev) => prev.includes(tag) ? prev : [...prev, tag]);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
   const handleCopy = useCallback((songName: string) => {
     setCopiedName(songName);
     setToastVisible(true);
@@ -151,6 +161,10 @@ export default function HomePage() {
           hasMore={hasMore}
           onLoadMore={fetchMore}
           onCopy={handleCopy}
+          onFilterLanguage={handleFilterLanguage}
+          onFilterTag={handleFilterTag}
+          activeLanguage={selectedLanguage}
+          activeTags={selectedTags}
           highlightId={null}
         />
       </div>
@@ -165,6 +179,10 @@ export default function HomePage() {
               hasMore={false}
               onLoadMore={() => {}}
               onCopy={handleCopy}
+          onFilterLanguage={handleFilterLanguage}
+          onFilterTag={handleFilterTag}
+          activeLanguage={selectedLanguage}
+          activeTags={selectedTags}
               highlightId={randomMode === 'result' ? randomResult?.id : null}
               hideEndMessage
             />

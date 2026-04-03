@@ -52,12 +52,14 @@ export async function checkLikeRateLimit(
   songId: number,
   ipHash: string
 ): Promise<boolean> {
+  const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+
   const result = await db
     .prepare(
       `SELECT COUNT(*) as count FROM likes_log
-       WHERE song_id = ? AND ip_hash = ?`
+       WHERE song_id = ? AND ip_hash = ? AND created_at > ?`
     )
-    .bind(songId, ipHash)
+    .bind(songId, ipHash, cutoff)
     .first<{ count: number }>();
 
   return (result?.count ?? 0) < LIKE_MAX_PER_IP;

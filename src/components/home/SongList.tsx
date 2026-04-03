@@ -12,6 +12,10 @@ interface SongListProps {
   onCopy: (songName: string) => void;
   highlightId?: number | null;
   hideEndMessage?: boolean;
+  onFilterLanguage?: (language: string) => void;
+  onFilterTag?: (tag: string) => void;
+  activeLanguage?: string | null;
+  activeTags?: string[];
 }
 
 function SkeletonCard() {
@@ -34,7 +38,7 @@ function SkeletonCard() {
   );
 }
 
-export default function SongList({ songs, loading, hasMore, onLoadMore, onCopy, highlightId, hideEndMessage }: SongListProps) {
+export default function SongList({ songs, loading, hasMore, onLoadMore, onCopy, highlightId, hideEndMessage, onFilterLanguage, onFilterTag, activeLanguage, activeTags }: SongListProps) {
   const sentinelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -69,7 +73,7 @@ export default function SongList({ songs, loading, hasMore, onLoadMore, onCopy, 
   return (
     <div className="space-y-3">
       {songs.map((song) => (
-        <SongCard key={song.id} song={song} onCopy={onCopy} highlight={highlightId === song.id} />
+        <SongCard key={song.id} song={song} onCopy={onCopy} highlight={highlightId === song.id} onFilterLanguage={onFilterLanguage} onFilterTag={onFilterTag} activeLanguage={activeLanguage} activeTags={activeTags} />
       ))}
 
       {loading && songs.length === 0 && (
