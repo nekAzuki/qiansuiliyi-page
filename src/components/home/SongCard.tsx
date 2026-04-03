@@ -132,14 +132,21 @@ export default function SongCard({ song, onCopy, highlight, onFilterLanguage, on
             </div>
           </div>
 
-          {/* Date + like — always at bottom right */}
-          <div className="flex items-center justify-end gap-2 mt-1">
-            <span className="text-xs text-gray-400">{new Date(song.created_at).toLocaleDateString('zh-CN')}</span>
-            <div
-              onClick={(e) => e.stopPropagation()}
-              onPointerDown={(e) => e.stopPropagation()}
-            >
-              <LikeButton songId={song.id} initialCount={song.likes} />
+          {/* Notes + date/like row */}
+          <div className="flex items-center justify-between gap-4 mt-1">
+            {song.notes ? (
+              <p className="text-[0.7rem] text-gray-400 break-words min-w-0 flex-1 font-light tracking-wide leading-relaxed">「{song.notes}」</p>
+            ) : (
+              <div className="flex-1" />
+            )}
+            <div className="flex-shrink-0 flex items-center gap-2">
+              <span className="text-xs text-gray-400">{new Date(song.created_at).toLocaleDateString('zh-CN')}</span>
+              <div
+                onClick={(e) => e.stopPropagation()}
+                onPointerDown={(e) => e.stopPropagation()}
+              >
+                <LikeButton songId={song.id} initialCount={song.likes} />
+              </div>
             </div>
           </div>
         </div>
