@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import TableToolbar from '@/components/admin/TableToolbar';
 import SongTable from '@/components/admin/SongTable';
 import ImportPreview from '@/components/admin/ImportPreview';
@@ -26,6 +26,8 @@ export default function AdminPage() {
   } = useAdminSongs();
 
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+  const [siteTagline, setSiteTagline] = useState('');
+  const [taglineSaved, setTaglineSaved] = useState(true);
   const lastClickedRef = useRef<number | null>(null);
   const songsRef = useRef(songs);
   songsRef.current = songs;
@@ -36,10 +38,39 @@ export default function AdminPage() {
   const [toastVisible, setToastVisible] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    fetch('/api/settings')
+      .then((res) => res.json() as Promise<{ success: boolean; data?: Record<string, string> }>)
+      .then((json) => {
+        if (json.success && json.data?.tagline) {
+          setSiteTagline(json.data.tagline);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   const showToast = useCallback((msg: string) => {
     setToastMsg(msg);
     setToastVisible(true);
   }, []);
+
+  const handleSaveTagline = useCallback(async () => {
+    const token = localStorage.getItem('admin_token');
+    const res = await fetch('/api/settings', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ tagline: siteTagline }),
+    });
+    if (res.ok) {
+      setTaglineSaved(true);
+      showToast('标语已保存');
+    } else {
+      showToast('保存失败');
+    }
+  }, [siteTagline, showToast]);
 
   const handleSelect = useCallback((id: number, selected: boolean, shiftKey?: boolean) => {
     const currentSongs = songsRef.current;
@@ -195,6 +226,27 @@ export default function AdminPage() {
 
   return (
     <div className="space-y-4">
+      {/* Site settings */}
+      <div className="card px-4 py-3">
+        <div className="flex items-center gap-3">
+          <label className="text-sm font-medium text-gray-600 whitespace-nowrap">网站标语</label>
+          <input
+            type="text"
+            value={siteTagline}
+            onChange={(e) => { setSiteTagline(e.target.value); setTaglineSaved(false); }}
+            className="flex-1 text-sm bg-transparent border-0 border-b border-gray-200 focus:border-primary-400 focus:ring-0 px-1 py-0.5"
+            placeholder="她的歌单"
+          />
+          <button
+            onClick={handleSaveTagline}
+            disabled={taglineSaved}
+            className="px-3 py-1 text-xs rounded-lg bg-primary-500 text-white hover:bg-primary-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          >
+            保存
+          </button>
+        </div>
+      </div>
+
       <TableToolbar
         unsavedCount={unsavedCount}
         selectedCount={selectedIds.size}

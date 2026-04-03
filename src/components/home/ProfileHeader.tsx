@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 
 interface ProfileHeaderProps {
   songCount: number;
+  tagline?: string;
 }
 
 interface LiveStatus {
@@ -15,7 +16,7 @@ interface LiveStatus {
 
 const LIVE_ROOM_URL = 'https://live.bilibili.com/27619512';
 
-export default function ProfileHeader({ songCount }: ProfileHeaderProps) {
+export default function ProfileHeader({ songCount, tagline }: ProfileHeaderProps) {
   const [live, setLive] = useState<LiveStatus | null>(null);
 
   useEffect(() => {
@@ -92,7 +93,7 @@ export default function ProfileHeader({ songCount }: ProfileHeaderProps) {
               </a>
             )}
           </div>
-          <p className="text-gray-500 text-sm mt-0.5">她的歌单</p>
+          <p className="text-gray-500 text-sm mt-0.5">{tagline || '她的歌单'}</p>
           <p className="text-primary-400 text-xs mt-1">共 {songCount} 首歌曲</p>
         </div>
       </div>

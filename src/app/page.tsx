@@ -23,8 +23,20 @@ export default function HomePage() {
   const [randomDisplay, setRandomDisplay] = useState<typeof songs>([]);
   const [randomResult, setRandomResult] = useState<typeof songs[0] | null>(null);
   const [searchBarHidden, setSearchBarHidden] = useState(false);
+  const [tagline, setTagline] = useState('');
   const searchBarRef = useRef<HTMLDivElement>(null);
   const shuffleCancelledRef = useRef(false);
+
+  useEffect(() => {
+    fetch('/api/settings')
+      .then((res) => res.json() as Promise<{ success: boolean; data?: Record<string, string> }>)
+      .then((json) => {
+        if (json.success && json.data?.tagline) {
+          setTagline(json.data.tagline);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const tags = useTags();
   const { songs, loading, hasMore, fetchMore } = useSongs({
@@ -114,8 +126,8 @@ export default function HomePage() {
   }, []);
 
   return (
-    <main className="px-4 py-6 space-y-4">
-      <ProfileHeader songCount={sortedSongs.length} />
+    <main className="max-w-lg mx-auto px-4 py-6 space-y-4 pointer-events-none [&>*]:pointer-events-auto">
+      <ProfileHeader songCount={sortedSongs.length} tagline={tagline} />
       <div ref={searchBarRef}>
         <SearchBar value={searchInput} onChange={setSearchInput} onRandom={handleRandom} />
       </div>

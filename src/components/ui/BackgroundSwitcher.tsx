@@ -5,8 +5,11 @@ export default function BackgroundSwitcher({ children }: { children: React.React
     const el = document.getElementById('bg-character');
     if (el) {
       el.style.animation = 'none';
-      el.offsetHeight;
-      el.style.animation = 'characterJump 400ms ease-out';
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          el.style.animation = 'characterJump 400ms ease-out';
+        });
+      });
     }
   };
 
@@ -33,8 +36,8 @@ export default function BackgroundSwitcher({ children }: { children: React.React
         />
       </div>
 
-      {/* Page content — z-10, centered, sides transparent for character clicks */}
-      <div className="relative z-10 max-w-lg mx-auto">
+      {/* Page content — z-10, pointer-events pass through to character */}
+      <div className="relative z-10 pointer-events-none [&>*]:pointer-events-auto">
         {children}
       </div>
     </div>
