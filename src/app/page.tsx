@@ -114,7 +114,7 @@ export default function HomePage() {
   }, []);
 
   return (
-    <main className="max-w-lg mx-auto px-4 py-6 space-y-4">
+    <main className="px-4 py-6 space-y-4">
       <ProfileHeader songCount={sortedSongs.length} />
       <div ref={searchBarRef}>
         <SearchBar value={searchInput} onChange={setSearchInput} onRandom={handleRandom} />
