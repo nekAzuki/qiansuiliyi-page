@@ -192,6 +192,24 @@ export default function HomePage() {
         </div>
       </div>
 
+      {/* Footer */}
+      <footer className="text-center py-6 mt-4">
+        <div className="inline-flex items-center gap-1.5 text-xs text-gray-400">
+          <img src="/coding.gif" alt="" className="w-5 h-5 object-contain" />
+          <span>Vibe coded in</span>
+          <img src="/space_needle.png" alt="" className="w-4 h-4 object-contain opacity-60" />
+          <span>Seattle by</span>
+          <a
+            href="https://space.bilibili.com/239998"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary-400 hover:text-primary-600 transition-colors"
+          >
+            Nekopara_Azuki
+          </a>
+        </div>
+      </footer>
+
       <Toast message="已复制歌曲名：" highlight={copiedName} visible={toastVisible} onHide={hideToast} />
     </main>
   );
