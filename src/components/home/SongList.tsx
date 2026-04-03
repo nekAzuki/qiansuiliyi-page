@@ -10,6 +10,8 @@ interface SongListProps {
   hasMore: boolean;
   onLoadMore: () => void;
   onCopy: (songName: string) => void;
+  highlightId?: number | null;
+  hideEndMessage?: boolean;
 }
 
 function SkeletonCard() {
@@ -32,7 +34,7 @@ function SkeletonCard() {
   );
 }
 
-export default function SongList({ songs, loading, hasMore, onLoadMore, onCopy }: SongListProps) {
+export default function SongList({ songs, loading, hasMore, onLoadMore, onCopy, highlightId, hideEndMessage }: SongListProps) {
   const sentinelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -67,7 +69,7 @@ export default function SongList({ songs, loading, hasMore, onLoadMore, onCopy }
   return (
     <div className="space-y-3">
       {songs.map((song) => (
-        <SongCard key={song.id} song={song} onCopy={onCopy} />
+        <SongCard key={song.id} song={song} onCopy={onCopy} highlight={highlightId === song.id} />
       ))}
 
       {loading && songs.length === 0 && (
@@ -78,7 +80,7 @@ export default function SongList({ songs, loading, hasMore, onLoadMore, onCopy }
         </>
       )}
 
-      {!loading && !hasMore && songs.length > 0 && (
+      {!loading && !hasMore && songs.length > 0 && !hideEndMessage && (
         <p className="text-center text-xs text-gray-400 py-6">没有更多歌曲了</p>
       )}
 

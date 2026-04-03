@@ -2,6 +2,20 @@ const NETEASE_SEARCH_API = 'https://music.163.com/api/search/get';
 const NETEASE_DETAIL_API = 'https://music.163.com/api/song/detail';
 const TIMEOUT_MS = 5000;
 
+function proxyUrl(url: string): string {
+  if (!url) return '';
+  // Rewrite Netease CDN URLs to go through our proxy
+  try {
+    const parsed = new URL(url);
+    if (parsed.hostname.endsWith('.music.126.net')) {
+      return `/api/proxy/image?url=${encodeURIComponent(url)}`;
+    }
+  } catch {
+    // not a valid URL
+  }
+  return url;
+}
+
 export interface SongSearchResult {
   name: string;
   artist: string;
@@ -16,7 +30,7 @@ export async function fetchCoverUrl(
     // Search Netease for the song and get album cover directly
     const results = await searchSongs(`${songName} ${artist}`, 0, 1);
     if (results.length > 0 && results[0].coverUrl) {
-      return results[0].coverUrl;
+      return proxyUrl(results[0].coverUrl);
     }
     return '';
   } catch {
@@ -74,7 +88,7 @@ export async function searchSongs(keyword: string, offset: number = 0, limit: nu
       return {
         name: (song.name as string) || '',
         artist: artistName,
-        coverUrl: coverMap[songId] || searchPicUrl,
+        coverUrl: proxyUrl(coverMap[songId] || searchPicUrl),
       };
     });
   } catch {
