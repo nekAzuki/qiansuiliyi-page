@@ -21,6 +21,7 @@ interface SongRowProps {
   duplicateOf: { song_name: string; artist: string } | null;
   onUpdate: (field: string, value: string) => void;
   onSelect: (selected: boolean, shiftKey?: boolean) => void;
+  allTags?: string[];
 }
 
 export default function SongRow({
@@ -32,6 +33,7 @@ export default function SongRow({
   duplicateOf,
   onUpdate,
   onSelect,
+  allTags,
 }: SongRowProps) {
   const [suggestions, setSuggestions] = useState<SearchResult[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -240,6 +242,7 @@ export default function SongRow({
             value={song.tags}
             onChange={(val) => onUpdate('tags', val)}
             disabled={isDeleted}
+            allTags={allTags}
           />
         </td>
         <td className="px-3 py-2">

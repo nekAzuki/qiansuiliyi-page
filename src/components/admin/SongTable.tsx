@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import { Song } from '@/types';
 import SongRow from './SongRow';
 
@@ -27,6 +28,20 @@ export default function SongTable({
   selectedIds,
   detectDuplicates,
 }: SongTableProps) {
+  // Collect all unique tags from all songs
+  const allTags = useMemo(() => {
+    const tagSet = new Set<string>();
+    for (const song of songs) {
+      try {
+        const parsed = JSON.parse(song.tags || '[]');
+        if (Array.isArray(parsed)) {
+          parsed.filter(Boolean).forEach((t: string) => tagSet.add(t));
+        }
+      } catch { /* skip */ }
+    }
+    return Array.from(tagSet).sort();
+  }, [songs]);
+
   if (songs.length === 0) {
     return (
       <div className="text-center py-12 text-gray-400 text-sm">
@@ -83,6 +98,7 @@ export default function SongTable({
                 duplicateOf={dup}
                 onUpdate={(field, value) => onUpdate(song.id, field, value)}
                 onSelect={(selected, shiftKey) => onSelect(song.id, selected, shiftKey)}
+                allTags={allTags}
               />
             );
           })}
