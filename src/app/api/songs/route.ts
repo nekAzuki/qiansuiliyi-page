@@ -103,9 +103,15 @@ export async function GET(request: NextRequest) {
 
     const nextCursor = hasMore && songs.length > 0 ? songs[songs.length - 1].id : undefined;
 
+    const cacheHeader = searchParams.has('nocache')
+      ? 'no-store'
+      : 'public, s-maxage=60, stale-while-revalidate=300';
+
     return NextResponse.json<ApiResponse<SongListResponse>>({
       success: true,
       data: { songs, hasMore, nextCursor, total },
+    }, {
+      headers: { 'Cache-Control': cacheHeader },
     });
   } catch {
     return NextResponse.json<ApiResponse>(

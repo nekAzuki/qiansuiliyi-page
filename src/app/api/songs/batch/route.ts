@@ -40,20 +40,22 @@ export async function POST(request: NextRequest) {
       .bind(snapshot, summary)
       .run();
 
-    // Process added songs
-    for (const song of added) {
+    // Process added songs — fetch covers in parallel first
+    const addedCovers = await Promise.all(
+      added.map(async (song) => {
+        if (song.cover_url) return song.cover_url;
+        try {
+          return await fetchCoverUrl(song.song_name, song.artist);
+        } catch {
+          return '';
+        }
+      })
+    );
+
+    for (let i = 0; i < added.length; i++) {
+      const song = added[i];
       const { pinyin: pinyinName, initials: initialsName } = computePinyin(song.song_name);
       const { pinyin: pinyinArtist, initials: initialsArtist } = computePinyin(song.artist);
-
-      let coverUrl = song.cover_url || '';
-      if (!coverUrl) {
-        try {
-          coverUrl = await fetchCoverUrl(song.song_name, song.artist);
-        } catch {
-          coverUrl = '';
-        }
-      }
-
       const tagsJson = JSON.stringify(song.tags ?? []);
 
       await db
@@ -66,7 +68,7 @@ export async function POST(request: NextRequest) {
           song.artist,
           song.language,
           tagsJson,
-          coverUrl,
+          addedCovers[i],
           song.notes ?? '',
           song.sort_weight ?? 0,
           pinyinName,

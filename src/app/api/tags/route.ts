@@ -34,6 +34,8 @@ export async function GET() {
     return NextResponse.json<ApiResponse<string[]>>({
       success: true,
       data: tags,
+    }, {
+      headers: { 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600' },
     });
   } catch {
     return NextResponse.json<ApiResponse>(

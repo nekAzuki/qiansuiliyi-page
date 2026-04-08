@@ -49,7 +49,7 @@ export function useAdminSongs() {
   const fetchSongs = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/songs?limit=9999', {
+      const res = await fetch('/api/songs?limit=9999&nocache=1', {
         headers: getAuthHeaders(),
       });
       const json: ApiResponse<{ songs: Song[] }> = await res.json();

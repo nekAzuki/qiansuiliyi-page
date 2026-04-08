@@ -22,11 +22,11 @@ export default function RootLayout({
     <html lang="zh-CN">
       <head>
         <link
-          href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap"
+          href="https://fonts.loli.net/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap"
           rel="stylesheet"
         />
       </head>
-      <body className="antialiased" style={{ fontFamily: '"Noto Sans SC", sans-serif' }}>
+      <body className="antialiased" style={{ fontFamily: '"PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif' }}>
         <BackgroundSwitcher>
           {children}
         </BackgroundSwitcher>

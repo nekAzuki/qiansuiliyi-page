@@ -54,6 +54,8 @@ export async function GET() {
         url: json.data.url,
         online: json.data.online,
       },
+    }, {
+      headers: { 'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60' },
     });
   } catch {
     return NextResponse.json<ApiResponse<LiveStatus>>({

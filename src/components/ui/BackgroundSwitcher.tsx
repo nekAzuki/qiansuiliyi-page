@@ -103,7 +103,7 @@ export default function BackgroundSwitcher({ children }: { children: React.React
       >
         <img
           id="bg-character"
-          src="/bg-character.png"
+          src="/bg-character.webp"
           alt=""
           className="object-contain object-top"
           draggable={false}

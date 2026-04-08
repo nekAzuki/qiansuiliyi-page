@@ -2,6 +2,7 @@ interface TableToolbarProps {
   unsavedCount: number;
   selectedCount: number;
   totalCount: number;
+  saving?: boolean;
   onAdd: () => void;
   onDeleteSelected: () => void;
   onSave: () => void;
@@ -15,6 +16,7 @@ export default function TableToolbar({
   unsavedCount,
   selectedCount,
   totalCount,
+  saving,
   onAdd,
   onDeleteSelected,
   onSave,
@@ -58,11 +60,17 @@ export default function TableToolbar({
       {/* Save — prominent green, only when there are changes */}
       <button
         onClick={onSave}
-        disabled={unsavedCount === 0}
-        className="px-4 py-1.5 text-sm font-medium rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 active:bg-emerald-800 shadow-sm transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+        disabled={unsavedCount === 0 || saving}
+        className="px-4 py-1.5 text-sm font-medium rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 active:bg-emerald-800 shadow-sm transition-colors disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center gap-1.5"
       >
-        保存修改
-        {unsavedCount > 0 && (
+        {saving && (
+          <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+          </svg>
+        )}
+        {saving ? '保存中...' : '保存修改'}
+        {!saving && unsavedCount > 0 && (
           <span className="ml-1.5 inline-flex items-center justify-center min-w-[20px] h-5 px-1 rounded-full bg-white/25 text-xs">
             {unsavedCount}
           </span>

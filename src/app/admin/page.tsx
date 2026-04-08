@@ -251,6 +251,7 @@ export default function AdminPage() {
         unsavedCount={unsavedCount}
         selectedCount={selectedIds.size}
         totalCount={songs.length}
+        saving={saving}
         onAdd={addSong}
         onDeleteSelected={handleDeleteSelected}
         onSave={handleSave}

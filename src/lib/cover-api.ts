@@ -8,7 +8,9 @@ function proxyUrl(url: string): string {
   try {
     const parsed = new URL(url);
     if (parsed.hostname.endsWith('.music.126.net')) {
-      return `/api/proxy/image?url=${encodeURIComponent(url)}`;
+      // Request 80x80 thumbnail from Netease CDN
+      const thumbUrl = url.includes('?') ? url : `${url}?param=80y80`;
+      return `/api/proxy/image?url=${encodeURIComponent(thumbUrl)}`;
     }
   } catch {
     // not a valid URL

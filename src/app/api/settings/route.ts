@@ -20,6 +20,8 @@ export async function GET() {
     return NextResponse.json<ApiResponse<Record<string, string>>>({
       success: true,
       data: settings,
+    }, {
+      headers: { 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600' },
     });
   } catch {
     return NextResponse.json<ApiResponse>(
