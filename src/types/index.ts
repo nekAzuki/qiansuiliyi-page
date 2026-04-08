@@ -53,6 +53,7 @@ export interface SongListResponse {
   songs: Song[];
   hasMore: boolean;
   nextCursor?: number;
+  total: number;
 }
 
 export interface LoginRequest {

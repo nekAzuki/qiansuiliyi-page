@@ -67,6 +67,22 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    // Build where clause without cursor for total count
+    const filterConditions = conditions.filter((_, i) => {
+      // Remove cursor condition (last one if cursor was set)
+      return !(cursor && i === conditions.length - 1);
+    });
+    const filterBindings = cursor ? bindings.slice(0, -1) : [...bindings];
+
+    const filterWhere = filterConditions.length > 0 ? `WHERE ${filterConditions.join(' AND ')}` : '';
+
+    // Get total count matching filters (excluding cursor pagination)
+    const countResult = await db
+      .prepare(`SELECT COUNT(*) as total FROM songs ${filterWhere}`)
+      .bind(...filterBindings)
+      .first<{ total: number }>();
+    const total = countResult?.total ?? 0;
+
     const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
 
     // Fetch limit + 1 to determine hasMore
@@ -89,7 +105,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json<ApiResponse<SongListResponse>>({
       success: true,
-      data: { songs, hasMore, nextCursor },
+      data: { songs, hasMore, nextCursor, total },
     });
   } catch {
     return NextResponse.json<ApiResponse>(

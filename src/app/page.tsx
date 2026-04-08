@@ -39,7 +39,7 @@ export default function HomePage() {
   }, []);
 
   const tags = useTags();
-  const { songs, loading, hasMore, fetchMore } = useSongs({
+  const { songs, loading, hasMore, total, fetchMore } = useSongs({
     query,
     language: selectedLanguage,
     tags: selectedTags,
@@ -137,7 +137,7 @@ export default function HomePage() {
 
   return (
     <main className="max-w-lg mx-auto px-4 py-6 space-y-4 pointer-events-none [&>*]:pointer-events-auto">
-      <ProfileHeader songCount={sortedSongs.length} tagline={tagline} />
+      <ProfileHeader songCount={total} tagline={tagline} />
       <div ref={searchBarRef}>
         <SearchBar value={searchInput} onChange={setSearchInput} onRandom={handleRandom} />
       </div>

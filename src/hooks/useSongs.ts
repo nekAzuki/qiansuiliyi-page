@@ -11,6 +11,7 @@ export function useSongs({ query, language, tags }: UseSongsParams) {
   const [songs, setSongs] = useState<Song[]>([]);
   const [loading, setLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
+  const [total, setTotal] = useState(0);
   const [nextCursor, setNextCursor] = useState<number | undefined>();
   const abortRef = useRef<AbortController | null>(null);
   const paramsRef = useRef({ query, language, tags });
@@ -46,6 +47,7 @@ export function useSongs({ query, language, tags }: UseSongsParams) {
           setSongs(json.data.songs);
           setHasMore(json.data.hasMore);
           setNextCursor(json.data.nextCursor);
+          setTotal(json.data.total);
         }
       })
       .catch((err) => {
@@ -103,5 +105,5 @@ export function useSongs({ query, language, tags }: UseSongsParams) {
     }
   }, [loading, hasMore, nextCursor]);
 
-  return { songs, loading, hasMore, fetchMore };
+  return { songs, loading, hasMore, total, fetchMore };
 }
