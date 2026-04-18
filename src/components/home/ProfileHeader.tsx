@@ -14,45 +14,21 @@ interface LiveStatus {
   online: number;
 }
 
-const ROOM_ID = '27619512';
-const LIVE_ROOM_URL = `https://live.bilibili.com/${ROOM_ID}`;
-const BILIBILI_API = `https://api.live.bilibili.com/xlive/web-room/v1/index/getRoomBaseInfo?room_ids=${ROOM_ID}&req_biz=link-center`;
+const LIVE_ROOM_URL = 'https://live.bilibili.com/27619512';
 
 export default function ProfileHeader({ songCount, tagline }: ProfileHeaderProps) {
   const [live, setLive] = useState<LiveStatus | null>(null);
 
   useEffect(() => {
     const fetchStatus = () => {
-      // Fetch directly from client — avoids Cloudflare-to-Cloudflare bot detection
-      fetch(`${BILIBILI_API}&_t=${Date.now()}`)
-        .then((res) => {
-          if (!res.ok) throw new Error('fetch failed');
-          return res.json() as Promise<{
-            code: number;
-            data: {
-              by_room_ids: Record<string, {
-                live_status: number;
-                title: string;
-                online: number;
-              }>;
-            };
-          }>;
-        })
+      fetch('/api/live')
+        .then((res) => res.json() as Promise<{ success: boolean; data: LiveStatus }>)
         .then((json) => {
-          if (json.code === 0 && json.data.by_room_ids[ROOM_ID]) {
-            const room = json.data.by_room_ids[ROOM_ID];
-            setLive({
-              isLive: room.live_status === 1,
-              title: room.title || '',
-              url: LIVE_ROOM_URL,
-              online: room.online || 0,
-            });
+          if (json.success && json.data) {
+            setLive(json.data);
           }
         })
-        .catch(() => {
-          // Silently fail — show offline
-          setLive({ isLive: false, title: '', url: LIVE_ROOM_URL, online: 0 });
-        });
+        .catch(() => {});
     };
 
     fetchStatus();
