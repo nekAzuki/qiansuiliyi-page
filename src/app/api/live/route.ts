@@ -26,27 +26,27 @@ export async function GET() {
     });
 
     if (!res.ok) {
-      return NextResponse.json<ApiResponse<LiveStatus>>(
-        { success: true, data: OFFLINE },
-        { headers: CACHE_HEADERS }
+      return NextResponse.json(
+        { success: true, data: OFFLINE, debug: { error: 'fetch_failed', status: res.status } },
+        { headers: { 'Cache-Control': 'no-store' } }
       );
     }
 
-    const json = await res.json() as {
-      code: number;
-      data: {
-        liveStatus: number;
-        title: string;
-        cover: string;
-        url: string;
-        online: number;
-      };
-    };
+    const text = await res.text();
+    let json: { code: number; data: { liveStatus: number; title: string; cover: string; url: string; online: number } };
+    try {
+      json = JSON.parse(text);
+    } catch {
+      return NextResponse.json(
+        { success: true, data: OFFLINE, debug: { error: 'json_parse_failed', body: text.slice(0, 200) } },
+        { headers: { 'Cache-Control': 'no-store' } }
+      );
+    }
 
     if (json.code !== 0) {
-      return NextResponse.json<ApiResponse<LiveStatus>>(
-        { success: true, data: OFFLINE },
-        { headers: CACHE_HEADERS }
+      return NextResponse.json(
+        { success: true, data: OFFLINE, debug: { error: 'api_error', code: json.code, body: text.slice(0, 200) } },
+        { headers: { 'Cache-Control': 'no-store' } }
       );
     }
 
@@ -62,10 +62,10 @@ export async function GET() {
     }, {
       headers: CACHE_HEADERS,
     });
-  } catch {
-    return NextResponse.json<ApiResponse<LiveStatus>>(
-      { success: true, data: OFFLINE },
-      { headers: CACHE_HEADERS }
+  } catch (err) {
+    return NextResponse.json(
+      { success: true, data: OFFLINE, debug: { error: 'exception', message: String(err) } },
+      { headers: { 'Cache-Control': 'no-store' } }
     );
   }
 }
