@@ -20,7 +20,10 @@ const OFFLINE: LiveStatus = { isLive: false, title: '', cover: '', url: '', onli
 export async function GET() {
   try {
     const res = await fetch(`${BILIBILI_LIVE_API}?mid=${STREAMER_UID}&_t=${Date.now()}`, {
-      headers: { 'User-Agent': 'Mozilla/5.0' },
+      headers: {
+        'User-Agent': 'Mozilla/5.0',
+        'Referer': 'https://live.bilibili.com/',
+      },
     });
 
     if (!res.ok) {
