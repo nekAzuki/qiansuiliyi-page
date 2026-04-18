@@ -25,14 +25,16 @@ export async function GET() {
 
     const res = await fetch(req);
 
+    const text = await res.text();
+
     if (!res.ok) {
-      return NextResponse.json<ApiResponse<LiveStatus>>(
-        { success: true, data: OFFLINE },
-        { headers: CACHE_HEADERS }
+      return NextResponse.json(
+        { success: true, data: OFFLINE, _debug: { step: 'fetch_failed', status: res.status, body: text.slice(0, 500) } },
+        { headers: { 'Cache-Control': 'no-store' } }
       );
     }
 
-    const json = await res.json() as {
+    let json: {
       code: number;
       data: {
         by_room_ids: Record<string, {
@@ -45,18 +47,27 @@ export async function GET() {
       };
     };
 
+    try {
+      json = JSON.parse(text);
+    } catch {
+      return NextResponse.json(
+        { success: true, data: OFFLINE, _debug: { step: 'json_parse_failed', body: text.slice(0, 500) } },
+        { headers: { 'Cache-Control': 'no-store' } }
+      );
+    }
+
     if (json.code !== 0) {
-      return NextResponse.json<ApiResponse<LiveStatus>>(
-        { success: true, data: OFFLINE },
-        { headers: CACHE_HEADERS }
+      return NextResponse.json(
+        { success: true, data: OFFLINE, _debug: { step: 'api_error', code: json.code } },
+        { headers: { 'Cache-Control': 'no-store' } }
       );
     }
 
     const room = json.data.by_room_ids[ROOM_ID];
     if (!room) {
-      return NextResponse.json<ApiResponse<LiveStatus>>(
-        { success: true, data: OFFLINE },
-        { headers: CACHE_HEADERS }
+      return NextResponse.json(
+        { success: true, data: OFFLINE, _debug: { step: 'room_not_found', data: JSON.stringify(json.data).slice(0, 500) } },
+        { headers: { 'Cache-Control': 'no-store' } }
       );
     }
 
@@ -72,10 +83,10 @@ export async function GET() {
     }, {
       headers: CACHE_HEADERS,
     });
-  } catch {
-    return NextResponse.json<ApiResponse<LiveStatus>>(
-      { success: true, data: OFFLINE },
-      { headers: CACHE_HEADERS }
+  } catch (err) {
+    return NextResponse.json(
+      { success: true, data: OFFLINE, _debug: { step: 'exception', err: String(err) } },
+      { headers: { 'Cache-Control': 'no-store' } }
     );
   }
 }
