@@ -3,8 +3,8 @@ export const runtime = 'edge';
 import { NextResponse } from 'next/server';
 import type { ApiResponse } from '@/types';
 
-const BILIBILI_LIVE_API = 'https://api.live.bilibili.com/room/v1/Room/getRoomInfoOld';
-const STREAMER_UID = '279148275';
+const BILIBILI_LIVE_API = 'https://api.live.bilibili.com/room/v1/Room/get_info';
+const ROOM_ID = '27619512';
 const CACHE_HEADERS = { 'Cache-Control': 'public, s-maxage=10, stale-while-revalidate=20' };
 
 export interface LiveStatus {
@@ -19,7 +19,7 @@ const OFFLINE: LiveStatus = { isLive: false, title: '', cover: '', url: '', onli
 
 export async function GET() {
   try {
-    const res = await fetch(`${BILIBILI_LIVE_API}?mid=${STREAMER_UID}&_t=${Date.now()}`, {
+    const res = await fetch(`${BILIBILI_LIVE_API}?room_id=${ROOM_ID}&_t=${Date.now()}`, {
       headers: {
         'User-Agent': 'Mozilla/5.0',
         'Referer': 'https://live.bilibili.com/',
@@ -27,46 +27,46 @@ export async function GET() {
     });
 
     if (!res.ok) {
-      return NextResponse.json(
-        { success: true, data: OFFLINE, debug: { error: 'fetch_failed', status: res.status } },
-        { headers: { 'Cache-Control': 'no-store' } }
+      return NextResponse.json<ApiResponse<LiveStatus>>(
+        { success: true, data: OFFLINE },
+        { headers: CACHE_HEADERS }
       );
     }
 
-    const text = await res.text();
-    let json: { code: number; data: { liveStatus: number; title: string; cover: string; url: string; online: number } };
-    try {
-      json = JSON.parse(text);
-    } catch {
-      return NextResponse.json(
-        { success: true, data: OFFLINE, debug: { error: 'json_parse_failed', body: text.slice(0, 200) } },
-        { headers: { 'Cache-Control': 'no-store' } }
-      );
-    }
+    const json = await res.json() as {
+      code: number;
+      data: {
+        live_status: number;
+        title: string;
+        user_cover: string;
+        room_id: number;
+        online: number;
+      };
+    };
 
     if (json.code !== 0) {
-      return NextResponse.json(
-        { success: true, data: OFFLINE, debug: { error: 'api_error', code: json.code, body: text.slice(0, 200) } },
-        { headers: { 'Cache-Control': 'no-store' } }
+      return NextResponse.json<ApiResponse<LiveStatus>>(
+        { success: true, data: OFFLINE },
+        { headers: CACHE_HEADERS }
       );
     }
 
     return NextResponse.json<ApiResponse<LiveStatus>>({
       success: true,
       data: {
-        isLive: json.data.liveStatus === 1,
+        isLive: json.data.live_status === 1,
         title: json.data.title,
-        cover: json.data.cover,
-        url: json.data.url,
+        cover: json.data.user_cover,
+        url: `https://live.bilibili.com/${json.data.room_id}`,
         online: json.data.online,
       },
     }, {
       headers: CACHE_HEADERS,
     });
-  } catch (err) {
-    return NextResponse.json(
-      { success: true, data: OFFLINE, debug: { error: 'exception', message: String(err) } },
-      { headers: { 'Cache-Control': 'no-store' } }
+  } catch {
+    return NextResponse.json<ApiResponse<LiveStatus>>(
+      { success: true, data: OFFLINE },
+      { headers: CACHE_HEADERS }
     );
   }
 }
