@@ -19,10 +19,8 @@ const OFFLINE: LiveStatus = { isLive: false, title: '', cover: '', url: '', onli
 
 export async function GET() {
   try {
-    const res = await fetch(`${BILIBILI_LIVE_API}?mid=${STREAMER_UID}`, {
+    const res = await fetch(`${BILIBILI_LIVE_API}?mid=${STREAMER_UID}&_t=${Date.now()}`, {
       headers: { 'User-Agent': 'Mozilla/5.0' },
-      // Don't use Cloudflare's fetch cache — always hit Bilibili
-      cache: 'no-store',
     });
 
     if (!res.ok) {
