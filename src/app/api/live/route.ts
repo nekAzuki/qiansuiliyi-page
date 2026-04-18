@@ -26,28 +26,29 @@ export async function GET() {
       },
     });
 
+    const text = await res.text();
+
     if (!res.ok) {
-      return NextResponse.json<ApiResponse<LiveStatus>>(
-        { success: true, data: OFFLINE },
-        { headers: CACHE_HEADERS }
+      return NextResponse.json(
+        { success: true, data: OFFLINE, _debug: { step: 'fetch_failed', status: res.status, headers: Object.fromEntries(res.headers.entries()), body: text.slice(0, 500) } },
+        { headers: { 'Cache-Control': 'no-store' } }
       );
     }
 
-    const json = await res.json() as {
-      code: number;
-      data: {
-        live_status: number;
-        title: string;
-        user_cover: string;
-        room_id: number;
-        online: number;
-      };
-    };
+    let json: { code: number; data: { live_status: number; title: string; user_cover: string; room_id: number; online: number } };
+    try {
+      json = JSON.parse(text);
+    } catch {
+      return NextResponse.json(
+        { success: true, data: OFFLINE, _debug: { step: 'json_parse_failed', body: text.slice(0, 500) } },
+        { headers: { 'Cache-Control': 'no-store' } }
+      );
+    }
 
     if (json.code !== 0) {
-      return NextResponse.json<ApiResponse<LiveStatus>>(
-        { success: true, data: OFFLINE },
-        { headers: CACHE_HEADERS }
+      return NextResponse.json(
+        { success: true, data: OFFLINE, _debug: { step: 'api_error', code: json.code, body: text.slice(0, 500) } },
+        { headers: { 'Cache-Control': 'no-store' } }
       );
     }
 
@@ -63,10 +64,10 @@ export async function GET() {
     }, {
       headers: CACHE_HEADERS,
     });
-  } catch {
-    return NextResponse.json<ApiResponse<LiveStatus>>(
-      { success: true, data: OFFLINE },
-      { headers: CACHE_HEADERS }
+  } catch (err) {
+    return NextResponse.json(
+      { success: true, data: OFFLINE, _debug: { err: String(err) } },
+      { headers: { 'Cache-Control': 'no-store' } }
     );
   }
 }
