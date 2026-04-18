@@ -5,6 +5,7 @@ import type { ApiResponse } from '@/types';
 
 const BILIBILI_LIVE_API = 'https://api.live.bilibili.com/room/v1/Room/getRoomInfoOld';
 const STREAMER_UID = '279148275';
+const CACHE_HEADERS = { 'Cache-Control': 'public, s-maxage=10, stale-while-revalidate=20' };
 
 export interface LiveStatus {
   isLive: boolean;
@@ -14,17 +15,21 @@ export interface LiveStatus {
   online: number;
 }
 
+const OFFLINE: LiveStatus = { isLive: false, title: '', cover: '', url: '', online: 0 };
+
 export async function GET() {
   try {
     const res = await fetch(`${BILIBILI_LIVE_API}?mid=${STREAMER_UID}`, {
       headers: { 'User-Agent': 'Mozilla/5.0' },
+      // Don't use Cloudflare's fetch cache — always hit Bilibili
+      cache: 'no-store',
     });
 
     if (!res.ok) {
-      return NextResponse.json<ApiResponse<LiveStatus>>({
-        success: true,
-        data: { isLive: false, title: '', cover: '', url: '', online: 0 },
-      });
+      return NextResponse.json<ApiResponse<LiveStatus>>(
+        { success: true, data: OFFLINE },
+        { headers: CACHE_HEADERS }
+      );
     }
 
     const json = await res.json() as {
@@ -39,10 +44,10 @@ export async function GET() {
     };
 
     if (json.code !== 0) {
-      return NextResponse.json<ApiResponse<LiveStatus>>({
-        success: true,
-        data: { isLive: false, title: '', cover: '', url: '', online: 0 },
-      });
+      return NextResponse.json<ApiResponse<LiveStatus>>(
+        { success: true, data: OFFLINE },
+        { headers: CACHE_HEADERS }
+      );
     }
 
     return NextResponse.json<ApiResponse<LiveStatus>>({
@@ -55,12 +60,12 @@ export async function GET() {
         online: json.data.online,
       },
     }, {
-      headers: { 'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60' },
+      headers: CACHE_HEADERS,
     });
   } catch {
-    return NextResponse.json<ApiResponse<LiveStatus>>({
-      success: true,
-      data: { isLive: false, title: '', cover: '', url: '', online: 0 },
-    });
+    return NextResponse.json<ApiResponse<LiveStatus>>(
+      { success: true, data: OFFLINE },
+      { headers: CACHE_HEADERS }
+    );
   }
 }
