@@ -63,8 +63,8 @@ export default function ProfileHeader({ songCount, tagline }: ProfileHeaderProps
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <h1 className="text-xl font-bold truncate text-primary-700">千穗梨衣_lily</h1>
-            {/* Live status */}
-            {live && (
+            {/* Live status — temporarily hidden due to Cloudflare-to-Bilibili API bot detection */}
+            {/* {live && (
               <a
                 href={isLive ? live.url : LIVE_ROOM_URL}
                 target="_blank"
@@ -91,7 +91,7 @@ export default function ProfileHeader({ songCount, tagline }: ProfileHeaderProps
                   </>
                 )}
               </a>
-            )}
+            )} */}
           </div>
           <p className="text-gray-500 text-sm mt-0.5">{tagline || '她的歌单'}</p>
           <p className="text-primary-400 text-xs mt-1">共 {songCount} 首歌曲</p>
